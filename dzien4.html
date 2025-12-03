@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Love Riddles</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: system-ui, sans-serif;
+        background: radial-gradient(
+            circle at top,
+            rgba(248, 250, 252, 0.2),
+            transparent 55%
+          ),
+          linear-gradient(160deg, #020617 0%, #1d2144 35%, #7c2d4f 100%);
+        color: #f9fafb;
+      }
+
+      .card {
+        background: rgba(15, 23, 42, 0.96);
+        border-radius: 20px;
+        padding: 22px 26px 20px;
+        border: 1px solid rgba(248, 187, 208, 0.7);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+        width: 380px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 1.5rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .subtitle {
+        margin: 0 0 16px;
+        font-size: 0.9rem;
+        color: #e5e7eb;
+      }
+
+      .rebus {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 1.4rem;
+      }
+
+      .badge {
+        background: #020617;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+      }
+
+      .hint {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        color: #cbd5f5;
+      }
+
+      .input-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 6px;
+      }
+
+      #answer {
+        flex: 1 1 220px;
+        max-width: 260px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        background: #020617;
+        color: #f9fafb;
+        outline: none;
+        font-size: 0.95rem;
+      }
+
+      #answer::placeholder {
+        color: #6b7280;
+      }
+
+      #answer:focus {
+        border-color: #fb7185;
+        box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.7);
+      }
+
+      button {
+        flex: 0 0 auto;
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #111827;
+        background: linear-gradient(135deg, #fb7185, #fbbf24);
+        box-shadow: 0 8px 20px rgba(248, 181, 71, 0.6);
+        transition: transform 0.15s ease, box-shadow 0.15s ease,
+          filter 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(248, 181, 71, 0.8);
+        filter: brightness(1.03);
+      }
+
+      button:active {
+        transform: translateY(0);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+      }
+
+      .info {
+        min-height: 1.4em;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+      }
+
+      .info.ok {
+        color: #bbf7d0;
+      }
+      .info.bad {
+        color: #fecaca;
+      }
+
+      .score-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        margin-top: 4px;
+      }
+
+      .small {
+        font-size: 0.78rem;
+        color: #9ca3af;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>zagadki love type shit</h1>
+      <p class="subtitle">Odgadnij hasło z rebusu</p>
+
+      <div class="badge">Zagadka <span id="currentIndex">1</span>/7</div>
+
+      <div class="rebus" id="rebusView"></div>
+      <div class="hint" id="hint"></div>
+
+      <div class="input-row">
+        <input id="answer" type="text" placeholder="Twoja odpowiedź..." />
+        <button id="check">OK</button>
+      </div>
+
+      <div class="info" id="info"></div>
+
+      <div class="score-row">
+        <div>Punkty: <strong id="score">0</strong></div>
+        <div>Najlepszy wynik: <strong id="best">0</strong></div>
+      </div>
+
+      <p class="small">
+        Podpowiedź: nie musisz używać wielkich liter ani polskich znaków.
+      </p>
+    </div>
+
+    <script>
+      // Proste zagadki‑rebusy
+      const riddles = [
+        {
+          icons: "💌 ➕ ❤️",
+          hint: "To, co wysyłasz, gdy bardzo za kimś tęsknisz.",
+          answers: ["list miłosny", "list milosny", "list"],
+        },
+        {
+          icons: "🌙 ➕ 💖",
+          hint: "Powiesz to, gdy życzysz komuś dobrej nocy.",
+          answers: [
+            "dobranoc kochanie",
+            "dobranoc skarbie",
+            "dobranoc",
+            "dobranoc, kocham cie",
+            "dobranoc kocham cie",
+          ],
+        },
+        {
+          icons: "👫 ➕ 🚶‍♀️🚶‍♂️ ➕ 🌧️☀️",
+          hint: "Na świeżym powietrzu",
+          answers: ["spacer", "spacery", "iść na spacer", "isc na spacer"],
+        },
+        {
+          icons: "❤️❤️‍🔥💕",
+          hint: "Uczucie ktore jest najmocniejsze",
+          answers: ["Milosc", "love"],
+        },
+        {
+          icons: "😓😖😭",
+          hint: "Uczucie gdy kogos dlugo nie widzisz",
+          answers: ["Tesknota", "Smutek"],
+        },
+        {
+          icons: "💋",
+          hint: "100000 ...",
+          answers: ["kisses", "buziakow"],
+        },
+        {
+          icons: "🫂🤗",
+          hint: "Najlepszy jak dlugo sie nie widzimy",
+          answers: [
+            "przytulas",
+            "tuli",
+            "przytulanie sie",
+            "przytulenie",
+            "tulas",
+            "przytulic sie",
+          ],
+        },
+      ];
+
+      const rebusView = document.getElementById("rebusView");
+      const hint = document.getElementById("hint");
+      const answerInput = document.getElementById("answer");
+      const checkBtn = document.getElementById("check");
+      const info = document.getElementById("info");
+      const scoreSpan = document.getElementById("score");
+      const bestSpan = document.getElementById("best");
+      const currentIndexSpan = document.getElementById("currentIndex");
+
+      let current = 0;
+      let score = 0;
+      let best = Number(localStorage.getItem("loveRiddlesBest") || 0);
+
+      bestSpan.textContent = best;
+
+      function normalize(str) {
+        return str
+          .toLowerCase()
+          .replaceAll("ą", "a")
+          .replaceAll("ć", "c")
+          .replaceAll("ę", "e")
+          .replaceAll("ł", "l")
+          .replaceAll("ń", "n")
+          .replaceAll("ó", "o")
+          .replaceAll("ś", "s")
+          .replaceAll("ż", "z")
+          .replaceAll("ź", "z")
+          .trim();
+      }
+
+      function showRiddle() {
+        const r = riddles[current];
+        rebusView.textContent = r.icons;
+        hint.textContent = r.hint;
+        currentIndexSpan.textContent = current + 1;
+        info.textContent = "";
+        info.className = "info";
+        answerInput.value = "";
+        answerInput.focus();
+      }
+
+      function nextRiddle() {
+        current = (current + 1) % riddles.length;
+        showRiddle();
+      }
+
+      function checkAnswer() {
+        const user = normalize(answerInput.value);
+        if (!user) return;
+
+        const r = riddles[current];
+        const ok = r.answers.some((a) => normalize(a) === user);
+
+        if (ok) {
+          info.textContent = "Pięknie! To dobra odpowiedź ❤️";
+          info.className = "info ok";
+          score += 10;
+          scoreSpan.textContent = score;
+
+          if (score > best) {
+            best = score;
+            bestSpan.textContent = best;
+            localStorage.setItem("loveRiddlesBest", best);
+          }
+
+          setTimeout(nextRiddle, 900);
+        } else {
+          info.textContent = "Jeszcze nie to… spróbuj inaczej to nazwać. 💭";
+          info.className = "info bad";
+        }
+      }
+
+      checkBtn.addEventListener("click", checkAnswer);
+      answerInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkAnswer();
+      });
+
+      showRiddle();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Love Clicker</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: system-ui, sans-serif;
+        background: radial-gradient(
+            circle at top,
+            rgba(255, 255, 255, 0.16),
+            transparent 55%
+          ),
+          linear-gradient(160deg, #020617 0%, #1d2144 40%, #7c2d4f 100%);
+        color: #f9fafb;
+      }
+
+      .card {
+        background: rgba(15, 23, 42, 0.96);
+        border-radius: 20px;
+        padding: 24px 26px 22px;
+        border: 1px solid rgba(248, 179, 195, 0.7);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+        width: 360px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.5rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      p.subtitle {
+        margin: 0 0 18px;
+        font-size: 0.9rem;
+        color: #e5e7eb;
+      }
+
+      /* serduszko */
+
+      .heart-btn {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 14px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        background: radial-gradient(circle at 30% 20%, #fda4af, #e11d48);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(248, 113, 150, 0.8),
+          0 14px 30px rgba(0, 0, 0, 0.6);
+        transition: transform 0.12s ease, box-shadow 0.12s ease,
+          filter 0.12s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .heart-btn span {
+        font-size: 3rem;
+        transform: translateY(2px);
+      }
+
+      .heart-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        filter: brightness(1.05);
+        box-shadow: 0 0 24px rgba(248, 150, 190, 0.95),
+          0 18px 36px rgba(0, 0, 0, 0.75);
+      }
+
+      .heart-btn:active {
+        transform: scale(0.96);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+      }
+
+      /* „Love meter” */
+
+      .meter-wrapper {
+        margin: 6px 0 4px;
+      }
+
+      .meter-label {
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .meter {
+        width: 100%;
+        height: 12px;
+        background: #020617;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid rgba(248, 179, 195, 0.6);
+      }
+
+      .meter-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #f97316, #fb7185, #e879f9);
+        transition: width 0.2s ease;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+      }
+
+      /* poziomy / komunikaty */
+
+      .level {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        min-height: 2.4em;
+      }
+
+      .level span {
+        font-weight: 600;
+        color: #f9a8d4;
+      }
+
+      .floating-heart {
+        position: absolute;
+        font-size: 1.1rem;
+        pointer-events: none;
+        animation: floatUp 0.8s ease-out forwards;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-40px) scale(1.4);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Love Clicker</h1>
+      <p class="subtitle">Klikaj serduszko, aby napełnić licznik miłości 💖</p>
+
+      <button class="heart-btn" id="heartBtn">
+        <span>❤️</span>
+      </button>
+
+      <div class="meter-wrapper">
+        <div class="meter-label">Love meter</div>
+        <div class="meter">
+          <div class="meter-fill" id="meterFill"></div>
+        </div>
+        <div class="stats">
+          <div>Punkty: <span id="score">0</span></div>
+          <div>Poziom: <span id="level">1</span></div>
+        </div>
+      </div>
+
+      <div class="level" id="levelText">
+        Kliknij serce, żeby zacząć historię. 💌
+      </div>
+    </div>
+
+    <script>
+      const heartBtn = document.getElementById("heartBtn");
+      const meterFill = document.getElementById("meterFill");
+      const scoreSpan = document.getElementById("score");
+      const levelSpan = document.getElementById("level");
+      const levelText = document.getElementById("levelText");
+
+      let score = 0;
+      const maxScore = 200;
+
+      const levels = [
+        { at: 0, text: "Kliknij serce, żeby zacząć historię. 💌" },
+        { at: 20, text: "Coś zaczyna iskrzyć ✨" },
+        {
+          at: 60,
+          text: "Serce bije szybciej 💓",
+        },
+        {
+          at: 120,
+          text: "To juz jest cos 🌹",
+        },
+        {
+          at: 180,
+          text: "<span>Kocham Cię</span>❤️",
+        },
+      ];
+
+      function updateUI() {
+        if (score > maxScore) score = maxScore;
+        const percent = (score / maxScore) * 100;
+        meterFill.style.width = percent + "%";
+        scoreSpan.textContent = score;
+
+        let currentLevel = 1;
+        let currentText = levels[0].text;
+
+        for (let i = 0; i < levels.length; i++) {
+          if (score >= levels[i].at) {
+            currentLevel = i + 1;
+            currentText = levels[i].text;
+          }
+        }
+
+        levelSpan.textContent = currentLevel;
+        levelText.innerHTML = currentText;
+      }
+
+      function spawnFloatingHeart(x, y) {
+        const rect = heartBtn.getBoundingClientRect();
+        const span = document.createElement("span");
+        span.className = "floating-heart";
+        span.textContent = "+1";
+
+        span.style.left = rect.left + rect.width / 2 + "px";
+        span.style.top = rect.top + rect.height / 2 + "px";
+
+        document.body.appendChild(span);
+
+        span.addEventListener("animationend", () => span.remove());
+      }
+
+      heartBtn.addEventListener("click", (e) => {
+        score += 1;
+        updateUI();
+        spawnFloatingHeart();
+      });
+
+      updateUI();
+    </script>
+  </body>
+</html>
