@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dzień 8</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #ff9a9e 0%,
+          #fecfef 50%,
+          #fecfef 100%
+        );
+        min-height: 200vh;
+        padding: 2rem;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .kisses-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .kiss-float {
+        position: absolute;
+        font-size: 22px;
+        animation: floatKisses 10s linear infinite;
+        color: rgba(255, 105, 180, 0.6);
+      }
+
+      @keyframes floatKisses {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        max-width: 650px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 4rem;
+      }
+
+      .day-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 3.8rem;
+        text-align: center;
+        color: #ff6b9d;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .game-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 35px;
+        padding: 3.5rem;
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        margin-bottom: 5rem;
+      }
+
+      .instruction {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 2rem;
+        font-weight: 500;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+        border-radius: 15px;
+        margin: 2rem 0;
+        overflow: hidden;
+        box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+        border: 3px solid #fff;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b9d, #ff8fab, #ff6b9d);
+        width: 0%;
+        border-radius: 12px;
+        transition: width 0.4s ease;
+        box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+      }
+
+      .score {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #ff6b9d;
+        margin: 1.5rem 0;
+        font-family: "Dancing Script", cursive;
+      }
+
+      .kisses-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+        max-width: 450px;
+        margin: 2rem auto;
+        padding: 25px;
+        background: linear-gradient(145deg, #fff, #f8f9fa);
+        border-radius: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 4px solid #ff6b9d;
+      }
+
+      .kiss-btn {
+        aspect-ratio: 1;
+        background: linear-gradient(145deg, #ffeaa7, #fab1a0);
+        border: 4px solid #fff;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 2.8rem;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: 0 12px 25px rgba(255, 234, 167, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .kiss-btn:hover {
+        transform: translateY(-8px) scale(1.1);
+        box-shadow: 0 20px 40px rgba(255, 234, 167, 0.6);
+      }
+
+      .kiss-btn.collected {
+        background: linear-gradient(145deg, #a8e6cf, #88d8a3) !important;
+        transform: scale(0.9);
+        cursor: default;
+        animation: kissCollected 0.6s ease;
+      }
+
+      .kiss-btn.collected::after {
+        content: "💋";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.2rem;
+        z-index: 2;
+      }
+
+      @keyframes kissCollected {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(0.9);
+        }
+      }
+
+      .reward {
+        display: none;
+        background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+        border-radius: 35px;
+        padding: 4rem 3rem;
+        margin: 6rem auto;
+        max-width: 650px;
+        box-shadow: 0 35px 70px rgba(255, 107, 157, 0.6);
+        transform: translateY(60px) scale(0.8);
+        opacity: 0;
+        transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        text-align: center;
+        position: relative;
+        top: 120px;
+      }
+
+      .reward.show {
+        display: block !important;
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .reward h3 {
+        font-size: 3.2rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        font-family: "Dancing Script", cursive;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .reward p {
+        font-size: 1.5rem;
+        color: white;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .restart-btn {
+        background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+        color: #333;
+        border: none;
+        padding: 20px 50px;
+        font-size: 1.3rem;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 2.5rem;
+        font-weight: 600;
+        transition: all 0.4s ease;
+        box-shadow: 0 10px 25px rgba(255, 234, 167, 0.5);
+      }
+
+      .restart-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(255, 234, 167, 0.7);
+      }
+
+      @media (max-width: 768px) {
+        .kisses-grid {
+          grid-template-columns: repeat(5, 1fr);
+          gap: 10px;
+        }
+        .day-title {
+          font-size: 3rem;
+        }
+        .kiss-btn {
+          font-size: 2.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="kisses-bg" id="kissesBg"></div>
+
+    <div class="container">
+      <h1 class="day-title">Dzień 8 💋</h1>
+
+      <div class="game-container">
+        <p class="instruction">
+          💋 Zbierz 12 pocałunków! Klikaj kwiatuszki żeby znaleźć ukryte
+          pocałunki 💕
+        </p>
+
+        <div class="score" id="score">0 / 12</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="kisses-grid" id="kissesGrid"></div>
+      </div>
+
+      <div style="height: 250px"></div>
+
+      <div class="reward" id="reward">
+        <h3>Wszystkie pocałunki zebrane! 💋✨</h3>
+        <p>
+          Zebranie wszystkich pocałunków to jak zbieranie chwil spędzonych razem
+          ❤️
+        </p>
+        <p>
+          Przyjmij wszystkie moje pocałunki na każdy dzień adwentu i nie tylko!
+        </p>
+        <button class="restart-btn" onclick="restartGame()">
+          Zbierz jeszcze raz 💋
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let kissesCollected = 0;
+      const totalKisses = 12;
+      const totalTiles = 24;
+
+      function createFloatingKisses() {
+        const kissesContainer = document.getElementById("kissesBg");
+        for (let i = 0; i < 30; i++) {
+          const kiss = document.createElement("div");
+          kiss.className = "kiss-float";
+          kiss.innerHTML = "💋";
+          kiss.style.left = Math.random() * 100 + "%";
+          kiss.style.animationDuration = Math.random() * 5 + 8 + "s";
+          kiss.style.animationDelay = Math.random() * 5 + "s";
+          kissesContainer.appendChild(kiss);
+        }
+      }
+
+      function initGame() {
+        const grid = document.getElementById("kissesGrid");
+        grid.innerHTML = "";
+        kissesCollected = 0;
+
+        // 🎲 LOSOWE POZYCJE pocałunków!
+        const kissPositions = [];
+        while (kissPositions.length < totalKisses) {
+          const randomIndex = Math.floor(Math.random() * totalTiles);
+          if (!kissPositions.includes(randomIndex)) {
+            kissPositions.push(randomIndex);
+          }
+        }
+
+        updateScore();
+
+        for (let i = 0; i < totalTiles; i++) {
+          const tile = document.createElement("div");
+          tile.className = "kiss-btn";
+          tile.innerHTML = "🌸";
+
+          // Losowo przypisane pocałunki wg kissPositions
+          if (kissPositions.includes(i)) {
+            tile.dataset.hasKiss = "true";
+          }
+
+          tile.onclick = () => collectKiss(tile);
+          grid.appendChild(tile);
+        }
+
+        document.getElementById("reward").classList.remove("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function collectKiss(tile) {
+        if (tile.dataset.hasKiss === "true" && kissesCollected < totalKisses) {
+          tile.classList.add("collected");
+          tile.dataset.hasKiss = "false";
+          kissesCollected++;
+          updateScore();
+
+          if (kissesCollected === totalKisses) {
+            setTimeout(showReward, 800);
+          }
+        }
+      }
+
+      function updateScore() {
+        document.getElementById(
+          "score"
+        ).textContent = `${kissesCollected} / ${totalKisses}`;
+        const progress = (kissesCollected / totalKisses) * 100;
+        document.getElementById("progressFill").style.width = progress + "%";
+      }
+
+      function showReward() {
+        const reward = document.getElementById("reward");
+        reward.classList.add("show");
+
+        reward.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
+        setTimeout(() => {
+          document.body.style.background = "#ff6b9d";
+          setTimeout(() => {
+            document.body.style.background =
+              "linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)";
+          }, 1500);
+        }, 1000);
+      }
+
+      function restartGame() {
+        initGame();
+      }
+
+      createFloatingKisses();
+      initGame();
+    </script>
+  </body>
+</html>

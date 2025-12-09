@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dzień 9 - Rozbij serce miłości 💘</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 200vh;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .particle {
+        position: absolute;
+        font-size: 20px;
+        pointer-events: none;
+      }
+
+      .container {
+        max-width: 650px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 4rem;
+      }
+
+      .day-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 4rem;
+        text-align: center;
+        color: #fff;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .game-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(25px);
+        border-radius: 40px;
+        padding: 4rem;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        margin-bottom: 5rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .instruction {
+        font-size: 1.6rem;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        font-weight: 500;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .heart-container {
+        perspective: 1000px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2rem 0;
+      }
+
+      .big-heart {
+        font-size: 18rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        transform-style: preserve-3d;
+        position: relative;
+        user-select: none;
+      }
+
+      .big-heart:hover {
+        transform: scale(1.05) rotateY(10deg);
+        filter: drop-shadow(0 20px 40px rgba(255, 255, 255, 0.3));
+      }
+
+      .big-heart.clicks-5 {
+        animation: heartShake 0.3s ease infinite;
+      }
+
+      .big-heart.clicks-10 {
+        animation: heartCrack1 0.4s ease infinite;
+      }
+
+      .big-heart.clicks-15 {
+        animation: heartCrack2 0.5s ease infinite;
+      }
+
+      .big-heart.clicks-20 {
+        animation: heartBreak 0.6s ease infinite;
+      }
+
+      @keyframes heartShake {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-3deg);
+        }
+        75% {
+          transform: rotate(3deg);
+        }
+      }
+
+      @keyframes heartCrack1 {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        50% {
+          transform: scale(1.05) rotate(1deg);
+        }
+      }
+
+      @keyframes heartCrack2 {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        33% {
+          transform: scale(1.08) rotate(-2deg);
+        }
+        66% {
+          transform: scale(1.03) rotate(2deg);
+        }
+      }
+
+      @keyframes heartBreak {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+        20% {
+          transform: scale(1.15) rotate(-6deg);
+        }
+        40% {
+          transform: scale(0.85) rotate(6deg);
+        }
+        60% {
+          transform: scale(1.1) rotate(-3deg);
+        }
+        80% {
+          transform: scale(0.95) rotate(3deg);
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+      }
+
+      .click-counter {
+        font-size: 3.5rem;
+        font-weight: bold;
+        color: #fff;
+        margin: 2rem 0;
+        font-family: "Dancing Script", cursive;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      .progress-bar {
+        width: 80%;
+        height: 25px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        margin: 2rem auto;
+        overflow: hidden;
+        box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ff6b6b);
+        width: 0%;
+        border-radius: 12px;
+        transition: width 0.4s ease;
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+      }
+
+      .reward {
+        display: none;
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        border-radius: 40px;
+        padding: 4.5rem 3.5rem;
+        margin: 6rem auto;
+        max-width: 700px;
+        box-shadow: 0 40px 80px rgba(255, 107, 107, 0.6);
+        transform: translateY(80px) scale(0.7);
+        opacity: 0;
+        transition: all 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        text-align: center;
+        position: relative;
+        top: 150px;
+      }
+
+      .reward.show {
+        display: block !important;
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .reward h3 {
+        font-size: 3.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        font-family: "Dancing Script", cursive;
+        text-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .reward p {
+        font-size: 1.6rem;
+        color: white;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .restart-btn {
+        background: linear-gradient(45deg, #fff, #f8f9fa);
+        color: #333;
+        border: none;
+        padding: 22px 55px;
+        font-size: 1.4rem;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 3rem;
+        font-weight: 700;
+        transition: all 0.4s ease;
+        box-shadow: 0 15px 35px rgba(255, 255, 255, 0.4);
+      }
+
+      .restart-btn:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 25px 50px rgba(255, 255, 255, 0.6);
+      }
+
+      @media (max-width: 768px) {
+        .day-title {
+          font-size: 3rem;
+        }
+        .big-heart {
+          font-size: 14rem;
+        }
+        .click-counter {
+          font-size: 2.8rem;
+        }
+        .reward h3 {
+          font-size: 2.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+      <h1 class="day-title">Dzień 9 💘</h1>
+
+      <div class="game-container">
+        <p class="instruction">
+          💘 Klikaj wielkie serce 25 razy żeby je rozbić i zobaczyć co jest w
+          środku! 💕
+        </p>
+
+        <div class="heart-container">
+          <div class="big-heart" id="bigHeart">💖</div>
+        </div>
+
+        <div class="click-counter" id="clickCounter">Kliknij: 0/25</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div style="height: 300px"></div>
+
+      <div class="reward" id="reward">
+        <h3>Serce rozbite! ❤️‍🔥</h3>
+        <p>
+          Podobnie jak moje serce... rozbite na kawałki miłości do Ciebie! 💖
+        </p>
+        <p>Każdy kawałek to jedno "kocham Cię" zapisane na zawsze!</p>
+        <button class="restart-btn" onclick="restartGame()">
+          Rozbij jeszcze raz 💘
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let clickCount = 0;
+      const totalClicks = 25;
+      const heart = document.getElementById("bigHeart");
+      const counter = document.getElementById("clickCounter");
+      const progressFill = document.getElementById("progressFill");
+      const particlesContainer = document.getElementById("particles");
+
+      function createParticles() {
+        for (let i = 0; i < 75; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.innerHTML = ["💖", "💕", "💗", "💝", "✨", "⭐"][
+            Math.floor(Math.random() * 6)
+          ];
+          particle.style.left = Math.random() * 100 + "%";
+          particle.style.top = "50%";
+          particle.style.fontSize = Math.random() * 18 + 16 + "px";
+
+          const angle = (Math.PI * 2 * i) / 75;
+          const velocity = 200 + Math.random() * 150;
+          const vx = Math.cos(angle) * velocity;
+          const vy = Math.sin(angle) * velocity;
+
+          particle.animate(
+            [
+              { transform: "translate(0, 0) scale(1)", opacity: 1 },
+              { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 },
+            ],
+            {
+              duration: 2500 + Math.random() * 1500,
+              easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }
+          ).onfinish = () => particle.remove();
+
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      function initGame() {
+        clickCount = 0;
+        heart.className = "big-heart";
+        counter.textContent = "Kliknij: 0/25";
+        progressFill.style.width = "0%";
+        particlesContainer.innerHTML = "";
+        document.getElementById("reward").classList.remove("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function handleHeartClick() {
+        clickCount++;
+        counter.textContent = `Kliknij: ${clickCount}/${totalClicks}`;
+        const progress = (clickCount / totalClicks) * 100;
+        progressFill.style.width = progress + "%";
+
+        // Progresywne animacje serca
+        if (clickCount === 5) heart.classList.add("clicks-5");
+        if (clickCount === 10) heart.classList.add("clicks-10");
+        if (clickCount === 15) heart.classList.add("clicks-15");
+        if (clickCount === 20) heart.classList.add("clicks-20");
+
+        heart.style.transform += ` scale(${1 + clickCount * 0.005})`;
+
+        if (clickCount === totalClicks) {
+          setTimeout(() => {
+            createParticles();
+            heart.innerHTML = "💔";
+            heart.style.transform = "scale(0)";
+
+            setTimeout(() => {
+              const reward = document.getElementById("reward");
+              reward.classList.add("show");
+
+              reward.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+
+              setTimeout(() => {
+                document.body.style.background = "#ff6b6b";
+                setTimeout(() => {
+                  document.body.style.background =
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                }, 1500);
+              }, 1000);
+            }, 1000);
+          }, 400);
+        }
+      }
+
+      heart.onclick = handleHeartClick;
+
+      function restartGame() {
+        initGame();
+      }
+
+      initGame();
+    </script>
+  </body>
+</html>

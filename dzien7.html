@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dzień 7 - Ułóż cyfry ❤️</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth; /* Płynne przewijanie */
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #a8edea 0%,
+          #fed6e3 50%,
+          #ff9a9e 100%
+        );
+        min-height: 200vh; /* Większa wysokość żeby był scroll */
+        padding: 2rem;
+        position: relative;
+      }
+
+      .hearts-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .heart-bg {
+        position: absolute;
+        color: rgba(255, 182, 193, 0.3);
+        font-size: 25px;
+        animation: floatHearts 8s linear infinite;
+      }
+
+      @keyframes floatHearts {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 4rem;
+      }
+
+      .day-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 3.5rem;
+        text-align: center;
+        color: #ff6b9d;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .game-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        margin-bottom: 4rem; /* Więcej miejsca na scroll */
+      }
+
+      .instruction {
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 2.5rem;
+        font-weight: 500;
+      }
+
+      .number-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto 2rem;
+        padding: 25px;
+        background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+        border-radius: 25px;
+        box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.1),
+          0 15px 30px rgba(0, 0, 0, 0.1);
+        border: 4px solid #a8e6cf;
+      }
+
+      .number-tile {
+        aspect-ratio: 1;
+        background: linear-gradient(145deg, #ff9a9e, #fecfef);
+        border: 4px solid #fff;
+        border-radius: 18px;
+        cursor: grab;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        user-select: none;
+        position: relative;
+      }
+
+      .number-tile:active {
+        cursor: grabbing;
+        transform: scale(0.95);
+      }
+
+      .number-tile:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+      }
+
+      .number-tile.correct {
+        background: linear-gradient(145deg, #a8e6cf, #88d8a3) !important;
+        border-color: #4facfe !important;
+        color: white;
+        box-shadow: 0 0 40px rgba(168, 230, 207, 0.9);
+        animation: correctTile 0.6s ease;
+      }
+
+      @keyframes correctTile {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+      }
+
+      .boom-message {
+        display: none;
+        background: linear-gradient(45deg, #ff6b35, #f7931e);
+        border-radius: 30px;
+        padding: 4rem 3rem;
+        margin: 6rem auto;
+        max-width: 600px;
+        box-shadow: 0 30px 60px rgba(255, 107, 53, 0.6);
+        transform: translateY(50px) scale(0.8);
+        opacity: 0;
+        transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        text-align: center;
+        position: relative;
+        top: 100px; /* Dodatkowe pozycjonowanie */
+      }
+
+      .boom-message.show {
+        display: block !important;
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .boom-explosion {
+        font-family: "Dancing Script", cursive;
+        font-size: 4.5rem;
+        color: white;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+        animation: boomShake 0.5s ease infinite;
+      }
+
+      @keyframes boomShake {
+        0%,
+        100% {
+          transform: translateX(0) rotate(0deg);
+        }
+        25% {
+          transform: translateX(-12px) rotate(-2deg);
+        }
+        75% {
+          transform: translateX(12px) rotate(2deg);
+        }
+      }
+
+      .love-message {
+        font-family: "Dancing Script", cursive;
+        font-size: 3rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        animation: heartBeat 1.5s ease infinite;
+      }
+
+      @keyframes heartBeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .restart-btn {
+        background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+        color: white;
+        border: none;
+        padding: 18px 45px;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .restart-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 35px rgba(255, 107, 157, 0.4);
+      }
+
+      @media (max-width: 768px) {
+        .number-grid {
+          gap: 10px;
+          max-width: 100%;
+        }
+        .day-title {
+          font-size: 2.8rem;
+        }
+        .number-tile {
+          font-size: 2.2rem;
+        }
+        .boom-explosion {
+          font-size: 3.2rem;
+        }
+        .love-message {
+          font-size: 2.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <div class="container">
+      <h1 class="day-title">Dzień 7 🔢</h1>
+
+      <div class="game-container">
+        <p class="instruction">
+          🔢 Przeciągaj cyfry żeby ułożyć je OD 1 DO 9! 💕
+        </p>
+        <p style="font-size: 1.1rem; color: #666; margin-top: 1rem">
+          (1 2 3)<br />
+          (4 5 6)<br />
+          (7 8 9)
+        </p>
+
+        <div class="number-grid" id="numberGrid"></div>
+      </div>
+
+      <!-- DUŻO PRZESTRZENI NA SCROLL -->
+      <div style="height: 200px"></div>
+
+      <div class="boom-message" id="boomMessage">
+        <div class="boom-explosion">BOOOM! 💥</div>
+        <div class="love-message">KOCHAM CIĘ! ❤️</div>
+        <p style="color: white; font-size: 1.4rem; margin-top: 1rem">
+          Udało się idealnie! Jesteś najlepsza! 😍
+        </p>
+
+        <button class="restart-btn" onclick="restartGame()">Nowa gra 🔢</button>
+      </div>
+    </div>
+
+    <script>
+      let draggedTile = null;
+      let puzzleSolved = false;
+      const correctOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+      function createFloatingHearts() {
+        const heartsContainer = document.getElementById("heartsBg");
+        for (let i = 0; i < 25; i++) {
+          const heart = document.createElement("div");
+          heart.className = "heart-bg";
+          heart.innerHTML = "💕";
+          heart.style.left = Math.random() * 100 + "%";
+          heart.style.animationDuration = Math.random() * 4 + 6 + "s";
+          heart.style.animationDelay = Math.random() * 4 + "s";
+          heartsContainer.appendChild(heart);
+        }
+      }
+
+      function initGame() {
+        const grid = document.getElementById("numberGrid");
+        grid.innerHTML = "";
+
+        const shuffledNumbers = [...correctOrder].sort(
+          () => Math.random() - 0.5
+        );
+
+        for (let i = 0; i < 9; i++) {
+          const tile = document.createElement("div");
+          tile.className = "number-tile";
+          tile.textContent = shuffledNumbers[i];
+          tile.dataset.number = shuffledNumbers[i];
+          tile.dataset.targetIndex = i;
+          tile.draggable = true;
+
+          tile.addEventListener("dragstart", dragStart);
+          tile.addEventListener("dragover", dragOver);
+          tile.addEventListener("drop", drop);
+
+          grid.appendChild(tile);
+        }
+
+        document.getElementById("boomMessage").classList.remove("show");
+        puzzleSolved = false;
+
+        // Reset scroll na górę
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function dragStart(e) {
+        draggedTile = this;
+        setTimeout(() => (this.style.display = "none"), 0);
+      }
+
+      function dragOver(e) {
+        e.preventDefault();
+      }
+
+      function drop(e) {
+        e.preventDefault();
+        if (draggedTile) {
+          const targetTile = this;
+
+          const draggedNumber = draggedTile.dataset.number;
+          const targetNumber = targetTile.dataset.number;
+
+          draggedTile.textContent = targetNumber;
+          targetTile.textContent = draggedNumber;
+
+          draggedTile.dataset.number = targetNumber;
+          targetTile.dataset.number = draggedNumber;
+
+          const tempIndex = draggedTile.dataset.targetIndex;
+          draggedTile.dataset.targetIndex = targetTile.dataset.targetIndex;
+          targetTile.dataset.targetIndex = tempIndex;
+
+          setTimeout(checkPuzzle, 200);
+
+          draggedTile.style.display = "flex";
+          draggedTile = null;
+        }
+      }
+
+      function checkPuzzle() {
+        const tiles = document.querySelectorAll(".number-tile");
+        let solved = true;
+
+        tiles.forEach((tile, index) => {
+          const number = parseInt(tile.dataset.number);
+          if (number !== correctOrder[index]) {
+            solved = false;
+            tile.classList.remove("correct");
+          } else {
+            tile.classList.add("correct");
+          }
+        });
+
+        if (solved && !puzzleSolved) {
+          puzzleSolved = true;
+
+          // 🔥 AUTO SCROLL Z EFEKTAMI! 🔥
+          setTimeout(() => {
+            // 1. Najpierw animacja cyferek
+            document.querySelectorAll(".number-tile").forEach((tile) => {
+              tile.style.animation = "correctTile 1s ease infinite";
+            });
+
+            // 2. Po 800ms PERFECT SCROLL DO BOOM
+            setTimeout(() => {
+              const boomMessage = document.getElementById("boomMessage");
+              boomMessage.classList.add("show");
+
+              // 🚀 MEGA PŁYNINY AUTO SCROLL
+              boomMessage.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center",
+              });
+
+              // 3. Dodatkowe efekty po scrollu
+              setTimeout(() => {
+                document.body.style.background = "#ff6b35";
+                setTimeout(() => {
+                  document.body.style.background =
+                    "linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #ff9a9e 100%)";
+                }, 1000);
+              }, 1200);
+            }, 800);
+          }, 300);
+        }
+      }
+
+      function restartGame() {
+        initGame();
+      }
+
+      // Start gry
+      createFloatingHearts();
+      initGame();
+    </script>
+  </body>
+</html>

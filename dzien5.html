@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dzien 5</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .snow-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .snowflake {
+        position: absolute;
+        color: #fff;
+        font-size: 35px; /* WIĘKSZE śnieżynki */
+        animation: snowfall linear infinite;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+        pointer-events: auto;
+        z-index: 2;
+      }
+
+      .snowflake:hover {
+        transform: scale(1.3);
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
+      }
+
+      @keyframes snowfall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+        color: white;
+      }
+
+      .day-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .instruction {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .letter-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .letter {
+        background: linear-gradient(145deg, #fff, #f0f0f0);
+        padding: 3rem;
+        border-radius: 20px;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        transform: scale(0);
+        animation: letterOpen 0.8s ease forwards;
+        font-family: "Dancing Script", cursive;
+      }
+
+      @keyframes letterOpen {
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .letter h2 {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .letter p {
+        font-size: 1.4rem;
+        line-height: 1.8;
+        color: #333;
+        margin-bottom: 1rem;
+        text-align: left;
+      }
+
+      .close-btn {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 2rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
+
+      .close-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+      }
+
+      @media (max-width: 768px) {
+        .day-title {
+          font-size: 2rem;
+        }
+        .snowflake {
+          font-size: 28px;
+        }
+        .letter {
+          padding: 2rem 1.5rem;
+          margin: 1rem;
+        }
+        .letter p {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="snow-container" id="snowContainer"></div>
+
+    <div class="content">
+      <h1 class="day-title">Dzień 5 ✨</h1>
+      <p class="instruction">
+        💌 Kliknij list wśród śnieżek... on tam jest! ❄️
+      </p>
+    </div>
+
+    <div class="letter-modal" id="letterModal">
+      <div class="letter">
+        <h2>Moja Kochana,</h2>
+        <p>
+          Wiesz, każdy płatek śniegu jest inny, wyjątkowy... dokładnie jak Ty.
+          Ale ty potrafisz jako jedyna ocieplic te zimne dni.
+        </p>
+        <p>
+          Każdy dzień z tobą to nowe ciekawe wspomnienia do kolekcji ktore
+          sprawiaja, ze zyje pelnia zycia.
+        </p>
+        <p>
+          Chciałbym juz aby spadł śnieg i było go więcej i żebyśmy mogli sie
+          przejsc na spacer w śniegu
+        </p>
+        <p style="text-align: right; font-style: italic; font-size: 1.6rem">
+          Całuję Cię mocno,<br />
+          Maks
+        </p>
+        <button class="close-btn" onclick="closeLetter()">Zamknij ❄️</button>
+      </div>
+    </div>
+
+    <script>
+      const snowContainer = document.getElementById("snowContainer");
+      const letterModal = document.getElementById("letterModal");
+      let letterFound = false;
+
+      // Funkcja tworzenia jednej grupy śnieżynek
+      function createSnowflakes() {
+        const snowflakeCount = 12; // Mniej śnieżynek żeby list był lepiej widoczny
+        const specialSnowflakeIndex = Math.floor(
+          Math.random() * snowflakeCount
+        );
+
+        for (let i = 0; i < snowflakeCount; i++) {
+          const snowflake = document.createElement("div");
+          snowflake.className = "snowflake";
+
+          // Losowa pozycja startowa
+          snowflake.style.left = Math.random() * 100 + "%";
+          snowflake.style.animationDuration =
+            Math.random() * 8 + 12 + "s"; /* WOLNIEJ - 12-20s */
+          snowflake.style.animationDelay = Math.random() * 3 + "s";
+          snowflake.style.fontSize =
+            Math.random() * 12 + 30 + "px"; /* WIĘKSZE: 30-42px */
+
+          // Specjalna śnieżynka z listem (losowa!)
+          if (i === specialSnowflakeIndex) {
+            snowflake.innerHTML = "💌";
+            snowflake.dataset.hasLetter = "true";
+          } else {
+            snowflake.innerHTML = "❄️";
+          }
+
+          // Kliknięcie śnieżynki
+          snowflake.onclick = function (e) {
+            e.stopPropagation();
+
+            if (this.dataset.hasLetter) {
+              // ZNALEZIONO LIST! - po prostu otwiera się
+              showLetter();
+            } else {
+              // Zwykła śnieżynka znika
+              this.style.opacity = "0";
+              this.style.pointerEvents = "none";
+            }
+          };
+
+          snowContainer.appendChild(snowflake);
+        }
+      }
+
+      function showLetter() {
+        letterModal.style.display = "flex";
+      }
+
+      function closeLetter() {
+        letterModal.style.display = "none";
+
+        // Nowa fala śnieżynek po zamknięciu (z nową 💌)
+        setTimeout(() => {
+          createSnowflakes();
+        }, 1500);
+      }
+
+      // Start - pierwsza fala śnieżynek
+      createSnowflakes();
+
+      // Ciągłe generowanie nowych fal śnieżynek (wolniej)
+      setInterval(() => {
+        if (letterModal.style.display === "none") {
+          createSnowflakes();
+        }
+      }, 10000); // Co 10 sekund nowa fala
+
+      // Kliknięcie poza listem zamyka go
+      window.onclick = function (event) {
+        if (event.target === letterModal) {
+          closeLetter();
+        }
+      };
+    </script>
+  </body>
+</html>

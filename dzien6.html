@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dzień 6</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #ffecd2 0%,
+          #fcb69f 50%,
+          #a8edea 100%
+        );
+        min-height: 100vh;
+        padding: 2rem;
+        position: relative;
+        /* USUNIĘTO overflow: hidden - teraz można scrollować */
+      }
+
+      .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .star {
+        position: absolute;
+        color: #ffd700;
+        font-size: 16px;
+        animation: twinkle 3s ease-in-out infinite;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 3rem; /* Dodatkowy padding na dole */
+      }
+
+      .day-title {
+        font-family: "Dancing+Script", cursive;
+        font-size: 3.5rem;
+        text-align: center;
+        color: #ff6b35;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .game-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .instruction {
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 2.5rem;
+        font-weight: 500;
+      }
+
+      .presents-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        max-width: 500px;
+        margin: 0 auto 2rem;
+      }
+
+      .present-box {
+        aspect-ratio: 1;
+        background: linear-gradient(145deg, #ff9a56, #ff6b35);
+        border: 4px solid #fff;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+      }
+
+      .present-box:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(255, 107, 53, 0.5);
+      }
+
+      .present-box::before {
+        content: "🎁";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.5rem;
+        z-index: 2;
+      }
+
+      .present-box.opened {
+        animation: openPresent 0.8s ease forwards;
+      }
+
+      .present-box.found {
+        background: linear-gradient(145deg, #ffd700, #ffed4e);
+        animation: foundPresent 1s ease infinite;
+        border-color: #ff6b35;
+      }
+
+      @keyframes openPresent {
+        0% {
+          transform: scale(1) rotateY(0deg);
+        }
+        50% {
+          transform: scale(0.8) rotateY(180deg);
+        }
+        100% {
+          transform: scale(0) rotateY(360deg);
+          opacity: 0;
+        }
+      }
+
+      @keyframes foundPresent {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+      }
+
+      .message {
+        display: none;
+        font-family: "Dancing Script", cursive;
+        font-size: 2rem;
+        color: #ff6b35;
+        margin: 2rem 0;
+        min-height: 3rem;
+      }
+
+      .reward {
+        display: none;
+        background: linear-gradient(45deg, #ffecd2, #fcb69f);
+        border-radius: 25px;
+        padding: 3rem;
+        margin: 2rem auto;
+        max-width: 600px;
+        box-shadow: 0 20px 40px rgba(252, 182, 159, 0.4);
+        transform: translateY(50px);
+        opacity: 0;
+        transition: all 0.8s ease;
+      }
+
+      .reward.show {
+        display: block;
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .reward h3 {
+        font-size: 2.2rem;
+        color: #ff6b35;
+        margin-bottom: 1.5rem;
+      }
+
+      .reward p {
+        font-size: 1.3rem;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .restart-btn {
+        background: linear-gradient(45deg, #ff6b35, #ff8e53);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .restart-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(255, 107, 53, 0.4);
+      }
+
+      @media (max-width: 768px) {
+        .presents-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          max-width: 100%;
+        }
+        .day-title {
+          font-size: 2.5rem;
+        }
+        .game-container {
+          padding: 2rem 1.5rem;
+        }
+        .reward {
+          margin: 2rem 1rem;
+          padding: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+      <h1 class="day-title">Dzień 6 🎁</h1>
+
+      <div class="game-container">
+        <p class="instruction">
+          🔍 Znajdź właściwy prezent wśród pudełek! Tylko jedno ma dla Ciebie
+          niespodziankę 💕
+        </p>
+
+        <div class="presents-grid" id="presentsGrid"></div>
+        <div class="message" id="message"></div>
+      </div>
+
+      <!-- Nagroda przeniesiona poza game-container dla lepszego scrollowania -->
+      <div class="reward" id="reward">
+        <h3>Znalazłaś! ✨</h3>
+        <p>Ten prezent to nie pudełko, to moje serce które oddałem Tobie.</p>
+
+        <button class="restart-btn" onclick="restartGame()">Nowa gra 🎁</button>
+      </div>
+    </div>
+
+    <script>
+      let gameActive = true;
+      const totalBoxes = 12;
+      let correctBox = Math.floor(Math.random() * totalBoxes);
+
+      function createStars() {
+        const starsContainer = document.getElementById("stars");
+        for (let i = 0; i < 30; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          star.innerHTML = "✨";
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.animationDelay = Math.random() * 3 + "s";
+          star.style.animationDuration = Math.random() * 3 + 2 + "s";
+          starsContainer.appendChild(star);
+        }
+      }
+
+      function initGame() {
+        const grid = document.getElementById("presentsGrid");
+        grid.innerHTML = "";
+
+        correctBox = Math.floor(Math.random() * totalBoxes); // Nowe losowanie za każdym razem
+
+        for (let i = 0; i < totalBoxes; i++) {
+          const box = document.createElement("div");
+          box.className = "present-box";
+          box.dataset.index = i;
+          box.onclick = () => openBox(i);
+          grid.appendChild(box);
+        }
+
+        document.getElementById("message").style.display = "none";
+        document.getElementById("reward").classList.remove("show");
+        gameActive = true;
+      }
+
+      function openBox(index) {
+        if (!gameActive) return;
+
+        const box = document.querySelector(`[data-index="${index}"]`);
+        box.classList.add("opened");
+
+        gameActive = false;
+
+        setTimeout(() => {
+          if (index === correctBox) {
+            box.classList.add("found");
+            box.classList.remove("opened");
+            document.getElementById("message").innerHTML =
+              "🎉 BRAWO! Znalazłaś właściwy prezent! 🎉";
+            document.getElementById("message").style.color = "#ff6b35";
+            document.getElementById("message").style.display = "block";
+
+            // Płynne przewinięcie do nagrody
+            setTimeout(() => {
+              document.getElementById("reward").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+              document.getElementById("reward").classList.add("show");
+            }, 500);
+          } else {
+            document.getElementById("message").innerHTML =
+              "😔 Nie tym razem... Spróbuj jeszcze raz!";
+            document.getElementById("message").style.color = "#666";
+            document.getElementById("message").style.display = "block";
+            setTimeout(restartGame, 2000);
+          }
+        }, 800);
+      }
+
+      function restartGame() {
+        initGame();
+      }
+
+      // Start gry
+      createStars();
+      initGame();
+    </script>
+  </body>
+</html>
